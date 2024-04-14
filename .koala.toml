@@ -83,12 +83,12 @@ Port = 8080
   IssuerContactEmail = "roylibman@gmail.com"
 
 [Metrics]
-  Collector = ""
+  Collector = "gmp"
   [Metrics.Endpoint]
-    Path = ""
-    Port = 0
-    Scheme = ""
-    Interval = ""
+    Path = "/metrics"
+    Port = 8080
+    Scheme = "http"
+    Interval = "30s"
 
 [Tracing]
   Backend = ""
