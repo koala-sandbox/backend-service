@@ -1,13 +1,17 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
+components:
+- ../../components/ingress
 configMapGenerator:
-- name: backend-service-configmap
+- behavior: merge
   envs:
   - .env
-  behavior: merge
+  name: backend-service-configmap
+images:
+- name: me-west1-docker.pkg.dev/koala-ops-demo-373407/koala-repo/backend-service
 kind: Kustomization
 labels:
 - pairs:
-    app.kubernetes.io/version: 
+    app.kubernetes.io/version: ""
 namePrefix: prod-
 namespace: prod
 patches:
@@ -15,11 +19,5 @@ patches:
   target:
     kind: Ingress
 resources:
-  - ../../base
-
-components:
-  - ../../components/ingress
-
-images:
-- name: me-west1-docker.pkg.dev/koala-ops-demo-373407/koala-repo/backend-service
-  newTag: 
+- ../../base
+- hpa.yaml
