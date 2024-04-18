@@ -10,7 +10,7 @@ Port = 8080
 
 [KoalaVersionInfo]
   Version = "1.1.65"
-  DeployWorkflowVersion = "1.1.65"
+  DeployWorkflowVersion = "1.1.74"
 
 [Repo]
   Name = "backend-service"
@@ -36,7 +36,7 @@ Port = 8080
     HPAMinReplicas = 1
     HPAMaxReplicas = 5
     HPATargetCPUUtilizationPercentage = 70
-    HPATargetMemoryUtilizationPercentage = 70
+    HPATargetMemoryUtilizationPercentage = 80
 
 [[Environments]]
   Name = "prod"
