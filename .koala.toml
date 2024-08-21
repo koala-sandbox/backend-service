@@ -10,7 +10,7 @@ Port = 8080
 
 [KoalaVersionInfo]
   Version = "1.1.147"
-  DeployWorkflowVersion = "1.1.147"
+  DeployWorkflowVersion = "1.1.151"
 
 [Repo]
   Name = "backend-service"
@@ -83,6 +83,22 @@ Port = 8080
     HPAMaxReplicas = 0
     HPATargetCPUUtilizationPercentage = 0
     HPATargetMemoryUtilizationPercentage = 0
+
+[[Environments]]
+  Name = "pre-prod"
+  Namespace = "pre-prod"
+  Cluster = "koala-demo-cluster"
+  Location = "me-west1"
+  CloudProvider = "gcp"
+  IngressEnabled = true
+  IngressHost = ""
+  [Environments.EnvDeploymentConfig]
+    AutoDeploy = true
+    HPAEnabled = true
+    HPAMinReplicas = 1
+    HPAMaxReplicas = 5
+    HPATargetCPUUtilizationPercentage = 70
+    HPATargetMemoryUtilizationPercentage = 70
 
 [SSLConfig]
   CertName = "backend-service-tls-cert"
