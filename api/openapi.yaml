@@ -4,6 +4,7 @@ info:
   title: backend-service API
   version: 1.0.0
 servers:
+- url: https://pre-prod.backend-service.koala-demo-cluster.cluster.koalaops.com
 - url: https://autopush.backend-service.koala-demo-cluster.cluster.koalaops.com
 - url: https://staging.backend-service.koala-demo-cluster.cluster.koalaops.com
 - url: https://prod.backend-service.koala-demo-cluster.cluster.koalaops.com
