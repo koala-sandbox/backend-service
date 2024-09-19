@@ -49,11 +49,11 @@ Port = 8080
   IngressHost = "prod.backend-service.koala-demo-cluster.cluster.koalaops.com"
   [Environments.EnvDeploymentConfig]
     AutoDeploy = false
-    HPAEnabled = false
+    HPAEnabled = true
     HPAMinReplicas = 1
     HPAMaxReplicas = 5
     HPATargetCPUUtilizationPercentage = 70
-    HPATargetMemoryUtilizationPercentage = 70
+    HPATargetMemoryUtilizationPercentage = 80
 
 [[Environments]]
   Name = "staging"
