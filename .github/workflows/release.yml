@@ -3,12 +3,10 @@
 # This workflow will update tag/version, build and push a Docker container to the container registry.
 # If configured to auto-deploy, it will also deploy the new version to the cluster.
 name: Release
-
 #  Prevent concurrent runs on the same branch/tag ref.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 on:
   push:
     branches:
@@ -26,7 +24,6 @@ jobs:
       id-token: "write"
     steps:
       - uses: actions/checkout@v4
-        
       - id: update_version
         name: Read VERSION file and bump minor version
         run: |
@@ -40,7 +37,6 @@ jobs:
           commit_message: Update VERSION to --> ${{ steps.update_version.outputs.tag }} [skip ci]
           commit_user_name: GitHub Actions Bot
           commit_user_email: CI@users.noreply.github.com
-
   build:
     uses: ./.github/workflows/build_image.yml
     needs: update_version_tag
