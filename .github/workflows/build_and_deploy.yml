@@ -1,7 +1,6 @@
 # Build image, push to container registry and deploy to the requested env/cluster.
 
 name: Build and Deploy
-
 on:
   workflow_dispatch:
     inputs:
@@ -51,7 +50,6 @@ jobs:
     with:
       tag: ${{ inputs.tag }}
     secrets: inherit
-
   deploy:
     # Deploy the new version to the cluster
     uses: ./.github/workflows/deploy.yml
