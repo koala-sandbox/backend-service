@@ -49,7 +49,7 @@ Port = 8080
   IngressHost = "prod.backend-service.koala-demo-cluster.cluster.koalaops.com"
   [Environments.EnvDeploymentConfig]
     AutoDeploy = false
-    HPAEnabled = true
+    HPAEnabled = false
     HPAMinReplicas = 1
     HPAMaxReplicas = 5
     HPATargetCPUUtilizationPercentage = 70
