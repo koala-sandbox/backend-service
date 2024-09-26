@@ -42,15 +42,14 @@ on:
         description: "Path to the deployment folder in the repo (whether centralized or single service repo), no leading or trailing slashes"
         required: false
         type: string
-      deployment_branch:
-        description: "The branch to use for deployment, defaults to the ref of the triggering workflow if not provided"
-        required: false
-        type: string      
-      dispatch_id:
-        description: 'A unique ID provided when dispatching this workflow'
+      deploy_config:
+        description: 'JSON structured config to prepend values to .env files'
         required: false
         type: string
-      
+      ref:
+        description: "The git ref to use"
+        required: false
+        type: string
   workflow_call:
     inputs:
       service_name:
@@ -85,15 +84,14 @@ on:
         description: "Folder path in the deployment repo, no leading or trailing slashes"
         required: false
         type: string
-      deployment_branch:
-        description: "The branch to use for deployment, defaults to the ref of the triggering workflow"
-        required: false
-        type: string
       ref:
         description: "The git ref to use"
         required: false
         type: string
-
+      deploy_config:
+        description: 'JSON structured config to prepend values to .env files'
+        required: false
+        type: string
 jobs:
   deploy:
     permissions:
@@ -116,10 +114,11 @@ jobs:
           echo "cloud_provider: ${{ inputs.cloud_provider }}"
           echo "deployment_repo: ${{ inputs.deployment_repo }}"
           echo "deployment_folder_path: ${{ inputs.deployment_folder_path }}"
-          echo "deployment_branch: ${{ inputs.deployment_branch }}"
           echo "ref: ${{ inputs.ref }}"
           echo "dispatch_id: ${{ inputs.dispatch_id }}"
-          
+          ENV_FILES_CONFIG=$(echo "${{ inputs.deploy_config }}" | base64 --decode)
+          echo "ENV_FILES_CONFIG=$ENV_FILES_CONFIG" >> $GITHUB_ENV
+          echo "deploy_config: $ENV_FILES_CONFIG"
       - name: Check inputs
         # If deployment_repo is provided, make sure a token is provided for the deployment repo
         run: |
@@ -134,7 +133,7 @@ jobs:
         uses: actions/checkout@v4
         if: inputs.deployment_repo == ''
         with:
-          ref: ${{ inputs.deployment_branch || inputs.ref }}
+          ref: ${{ inputs.ref }}
           
 
       # Checkout the deployment repo if provided. Requires a token to be provided with permissions to the deployment repo.
@@ -142,9 +141,19 @@ jobs:
         uses: actions/checkout@v4
         if: inputs.deployment_repo != ''
         with:
-          ref: ${{ inputs.deployment_branch || inputs.ref }}
+          ref: ${{ inputs.ref }}
           repository: ${{ inputs.deployment_repo }}
           
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        if: inputs.deploy_config != ''
+        with:
+          node-version: '18'
+
+      - name: Parse inlineConfig and prepend key-values
+        if: inputs.deploy_config != ''
+        run: npx extend-env-files
 
       # Determine the deployment directory based on the input variables (deployment_repo, deployment_folder_path, overlay)
       - name: Set environment variables
@@ -169,8 +178,9 @@ jobs:
           kustomize edit set image $IMAGE:${{ inputs.tag }}
           sed -i "s/app.kubernetes.io\/version:.*/app.kubernetes.io\/version: ${{ inputs.tag }}/g" kustomization.yaml
           kustomize edit set annotation last-deployed-by:${{ github.actor }}
-          NAMESPACE=$(cat kustomization.yaml | grep namespace: | cut -d ":" -f 2 | tr -d '[:space:]')
-          FULLNAME="$(cat kustomization.yaml | grep namePrefix: | cut -d ":" -f 2 | tr -d '[:space:]')$NAME"
+          BUILD_RESULT=$(kustomize build)
+          NAMESPACE=$(echo "$BUILD_RESULT" | grep -m 1 namespace: | cut -d ":" -f 2 | tr -d '[:space:]')
+          FULLNAME="$NAME"
           echo "NAMESPACE: $NAMESPACE"
           echo "FULLNAME: $FULLNAME"
           echo "NAMESPACE=$NAMESPACE" >> $GITHUB_ENV
