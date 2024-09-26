@@ -20,3 +20,4 @@ patches:
     kind: Ingress
 resources:
 - ../../base
+- hpa.yaml
