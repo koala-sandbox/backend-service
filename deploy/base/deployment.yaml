@@ -5,27 +5,27 @@ metadata:
   labels:
     app: backend-service
 spec:
-  replicas: 1
+  replicas: "3"
   selector:
     matchLabels:
       app: backend-service
   template:
     spec:
       containers:
-      - name: backend-service
-        image: me-west1-docker.pkg.dev/koala-ops-demo-373407/koala-repo/backend-service:latest
-        resources:
-          requests:
-            cpu: 100m
-            memory: 200Mi
-          limits:
-            cpu: 500m
-            memory: 500Mi
-        ports:
-        - containerPort: 8080
-        envFrom:
-        - configMapRef:
-            name: backend-service-configmap
+        - name: backend-service
+          image: me-west1-docker.pkg.dev/koala-ops-demo-373407/koala-repo/backend-service:latest
+          resources:
+            requests:
+              cpu: 150m
+              memory: 200Mi
+            limits:
+              cpu: 750m
+              memory: 500Mi
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: backend-service-configmap
     metadata:
       labels:
         app: backend-service
